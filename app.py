@@ -6,8 +6,13 @@ from flask import Flask, render_template, request, redirect, url_for, send_from_
 from werkzeug.utils import secure_filename
 
 BASE_DIR = Path(__file__).resolve().parent
-DATABASE = Path(os.environ.get("DATABASE_PATH", BASE_DIR / "booksite.db"))
-UPLOAD_DIR = Path(os.environ.get("UPLOAD_FOLDER", BASE_DIR / "uploads"))
+# On Render, mount a Persistent Disk at /var/data. The app automatically uses it
+# when available; DATABASE_PATH and UPLOAD_FOLDER can override these locations.
+RENDER_DATA_DIR = Path("/var/data")
+DATA_DIR = Path(os.environ.get("DATA_DIR", str(RENDER_DATA_DIR if RENDER_DATA_DIR.exists() else BASE_DIR)))
+DATABASE = Path(os.environ.get("DATABASE_PATH", str(DATA_DIR / "booksite.db")))
+UPLOAD_DIR = Path(os.environ.get("UPLOAD_FOLDER", str(DATA_DIR / "uploads")))
+DATABASE.parent.mkdir(parents=True, exist_ok=True)
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 ALLOWED_EXTENSIONS = {"pdf", "epub"}
 
@@ -26,7 +31,7 @@ BOOK = {
 }
 
 def db():
-    connection = sqlite3.connect(DATABASE)
+    connection = sqlite3.connect(DATABASE, timeout=30)
     connection.row_factory = sqlite3.Row
     return connection
 
