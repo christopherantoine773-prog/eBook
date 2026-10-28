@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}The Echo of a Silence — Antoine Christopher{% endblock %}
+{% block head %}<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <div class="eyebrow"><span class="eyebrow-line"></span> UN LIVRE · UNE VOIX · UN ÉCHO</div>
+    <h1>Certains silences<br>racontent <em>tout.</em></h1>
+    <p class="hero-description">Entrez dans l’univers de <strong>{{ book.title }}</strong>, un livre d’{{ book.author }}. Prenez le temps de lire, de ressentir et de découvrir chaque page.</p>
+    <div class="hero-actions">
+      <a class="button button-primary" href="#book">Découvrir le livre <span>↘</span></a>
+      <a class="button button-quiet" href="#analytics">Voir les statistiques</a>
+    </div>
+    <div class="hero-proof"><div class="avatar-stack"><span>A</span><span>E</span><span>✦</span></div><div><strong>{{ "{:,}".format(stats.views).replace(",", " ") }} visites</strong><small>Le livre trouve son public</small></div></div>
+  </div>
+  <div class="hero-art">
+    <div class="orbit orbit-a"></div><div class="orbit orbit-b"></div>
+    <div class="book-shadow"></div>
+    <div class="book-cover">
+      <div class="cover-top">ANTOINE CHRISTOPHER</div>
+      <div class="cover-art"><div class="moon"></div><div class="horizon"></div><div class="silhouette"></div></div>
+      <div class="cover-title">THE ECHO<br><span>OF A</span><br>SILENCE</div>
+      <div class="cover-rule"></div><div class="cover-bottom">A STORY THAT STAYS</div>
+    </div>
+    <div class="floating-note"><span class="note-icon">✦</span><span><b>Une lecture à soi</b><small>Un instant de calme</small></span></div>
+    <div class="art-caption">01 / L’ŒUVRE</div>
+  </div>
+</section>
+
+<section class="stats-grid" aria-label="Statistiques du livre">
+  <article class="stat-card"><div class="stat-label"><span class="stat-icon">◉</span> VUES TOTALES</div><div class="stat-value">{{ "{:,}".format(stats.views).replace(",", " ") }}</div><div class="stat-foot"><span class="live-dot"></span> Visites enregistrées</div></article>
+  <article class="stat-card"><div class="stat-label"><span class="stat-icon">⇩</span> TÉLÉCHARGEMENTS</div><div class="stat-value">{{ "{:,}".format(stats.downloads).replace(",", " ") }}</div><div class="stat-foot">PDF / EPUB</div></article>
+  <article class="stat-card"><div class="stat-label"><span class="stat-icon">▤</span> LECTEURS</div><div class="stat-value">{{ "{:,}".format(stats.readers).replace(",", " ") }}</div><div class="stat-foot">Lectures lancées</div></article>
+  <article class="stat-card"><div class="stat-label"><span class="stat-icon">↗</span> PARTAGES</div><div class="stat-value">{{ "{:,}".format(stats.shares).replace(",", " ") }}</div><div class="stat-foot">Compteur de départ</div></article>
+</section>
+
+<section class="book-section section" id="book">
+  <div class="section-heading"><div><div class="eyebrow">À PROPOS DE L’ŒUVRE</div><h2>Une histoire à <em>rencontrer.</em></h2></div><span class="section-number">01 — 03</span></div>
+  <div class="book-panel">
+    <div class="mini-cover"><div class="mini-moon"></div><span>THE ECHO<br>OF A<br>SILENCE</span><small>ANTOINE CHRISTOPHER</small></div>
+    <div class="book-info"><div class="book-tag">LIVRE NUMÉRIQUE <span>·</span> PDF{% if book_file and book_file['original_name'].lower().endswith('.epub') %} / EPUB{% else %} / EPUB{% endif %}</div><h3>{{ book.title }}</h3><p class="byline">Écrit par <strong>{{ book.author }}</strong></p><p class="book-desc">{{ book.description }}</p><div class="book-meta"><div><small>AUTEUR</small><b>{{ book.author }}</b></div><div><small>FORMAT</small><b>PDF{% if book_file %} / {{ book_file['original_name'].rsplit('.', 1)[-1].upper() }}{% else %} / EPUB{% endif %}</b></div><div><small>ACCÈS</small><b>En ligne</b></div></div>
+      <div class="book-actions">{% if book_file and book_file['original_name'].lower().endswith('.pdf') %}<a class="button button-primary" href="{{ url_for('read_book') }}">Lire en ligne <span>↗</span></a>{% endif %}<a class="button button-outline" href="{{ url_for('download_book') }}">Télécharger <span>↓</span></a></div>
+      {% if not book_file %}<p class="upload-hint">Le livre sera disponible dès que tu auras ajouté le PDF ou l’EPUB dans l’espace auteur.</p>{% endif %}
+    </div>
+    <div class="quote-card"><span class="quote-mark">“</span><p>Il y a des choses que l’on ne dit pas, mais qui continuent de résonner.</p><span class="quote-credit">— L’ESPRIT DU LIVRE</span></div>
+  </div>
+</section>
+
+<section class="section analytics-section" id="analytics">
+  <div class="section-heading"><div><div class="eyebrow">APERÇU DES PERFORMANCES</div><h2>Le livre, en <em>chiffres.</em></h2></div><span class="section-number">02 — 03</span></div>
+  <div class="analytics-layout">
+    <div class="chart-card"><div class="chart-header"><div><h3>Activité récente</h3><p>Événements enregistrés sur les 7 derniers jours</p></div><span class="chart-badge"><span class="live-dot"></span> EN DIRECT</span></div><div class="chart-wrap"><canvas id="activityChart" aria-label="Graphique des vues et téléchargements"></canvas></div><div class="chart-legend"><span><i class="legend-view"></i> Vues</span><span><i class="legend-download"></i> Téléchargements</span></div></div>
+    <div class="insight-card"><div class="insight-top"><span>✧</span><span>APERÇU</span></div><h3>Chaque lecture<br>compte.</h3><p>Les compteurs principaux démarrent avec une base initiale. Le graphique, lui, affiche les vues et téléchargements réellement enregistrés chaque jour sur ce site.</p><div class="insight-divider"></div><div class="insight-row"><span>Base de vues</span><b>{{ "{:,}".format(stats.views).replace(",", " ") }}</b></div><div class="insight-row"><span>Base téléchargements</span><b>{{ "{:,}".format(stats.downloads).replace(",", " ") }}</b></div></div>
+  </div>
+</section>
+<section class="closing-cta"><div><div class="eyebrow">VOTRE PROCHAINE LECTURE</div><h2>Entendez-vous<br><em>l’écho ?</em></h2></div><a href="#book" class="button button-primary">Accéder au livre <span>↑</span></a></section>
+{% endblock %}
+{% block scripts %}
+<script>
+const labels = {{ labels|tojson }};
+const views = {{ chart_views|tojson }};
+const downloads = {{ chart_downloads|tojson }};
+const ctx = document.getElementById('activityChart');
+new Chart(ctx, {
+  type: 'line',
+  data: { labels, datasets: [
+    { label: 'Vues', data: views, borderColor: '#4dd9c7', backgroundColor: 'rgba(77,217,199,.12)', fill: true, tension: .38, borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 5 },
+    { label: 'Téléchargements', data: downloads, borderColor: '#a79bff', backgroundColor: 'rgba(167,155,255,.06)', fill: true, tension: .38, borderWidth: 2.5, pointRadius: 3, pointHoverRadius: 5 }
+  ]},
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display:false}, tooltip: {backgroundColor:'#111d2d', padding:12, cornerRadius:10} }, scales: {
+    x: { grid: {display:false}, ticks: {color:'#7e8ba0', font:{family:'DM Sans'}}, border:{display:false} },
+    y: { beginAtZero:true, grid:{color:'rgba(148,163,184,.10)'}, ticks:{color:'#7e8ba0', precision:0}, border:{display:false} }
+  }}
+});
+</script>
+{% endblock %}

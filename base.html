@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#06111f">
+  <meta name="description" content="Découvrez et lisez The Echo of a Silence, un livre d’Antoine Christopher.">
+  <title>{% block title %}{{ book.title if book else "The Echo of a Silence" }}{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('index') }}"><span class="brand-mark">E</span><span>Echo<span class="brand-dot">.</span></span></a>
+    <nav><a href="{{ url_for('index') }}#book">Le livre</a><a href="{{ url_for('index') }}#analytics">Statistiques</a><a class="nav-cta" href="{{ url_for('admin') }}">Espace auteur ↗</a></nav>
+  </header>
+  <main class="page-wrap">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}{% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}{% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="footer"><div class="footer-brand">Echo<span class="brand-dot">.</span></div><p>Les mots restent, même lorsque le silence parle.</p><span>© <span id="year"></span> Antoine Christopher · Tous droits réservés</span></footer>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

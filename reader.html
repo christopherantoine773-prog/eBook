@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Lire {{ book.title }}{% endblock %}
+{% block content %}
+<section class="reader-heading"><a class="back-link" href="{{ url_for('index') }}">← Retour au livre</a><div class="eyebrow">LECTURE EN LIGNE</div><h1>{{ book.title }}</h1><p>Par {{ book.author }}</p></section>
+<div class="pdf-frame"><iframe src="{{ url_for('serve_book_file', filename=filename) }}" title="Lecture de {{ book.title }}"></iframe></div>
+{% endblock %}
