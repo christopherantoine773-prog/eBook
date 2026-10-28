@@ -5,7 +5,7 @@
 <div class="admin-card">
 {% if authorized %}
   <div class="admin-success">✓ Accès autorisé pour cette session.</div>
-  <form method="post" action="{{ url_for('admin/upload') }}" enctype="multipart/form-data">
+  <form method="post"  action="{{ url_for('admin_upload') }}"enctype="multipart/form-data">
     <label for="password2">Mot de passe administrateur</label><input id="password2" type="password" name="password" required placeholder="Saisissez à nouveau votre mot de passe">
     <label for="book_file">Fichier du livre (PDF ou EPUB)</label><input id="book_file" type="file" name="book_file" accept=".pdf,.epub" required>
     <p class="form-note">Maximum 50 Mo. Le nouveau fichier remplacera la version publique précédente.</p>
