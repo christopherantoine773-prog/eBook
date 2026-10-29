@@ -1,51 +1,35 @@
-# The Echo of a Silence — site de livre
+# The Echo of a Silence — bibliothèque de livres
 
-Site web Flask/Python pour présenter **The Echo of a Silence**, d’Antoine Christopher, permettre la lecture PDF dans le navigateur et le téléchargement d’un fichier PDF ou EPUB. Le tableau de bord affiche les statistiques, avec une base de départ de **800 vues**, **264 téléchargements**, **137 lecteurs** et **42 partages**.
-
-> Transparence : les nombres de départ sont des valeurs initiales demandées pour le design. À partir du déploiement, les visites, lectures et téléchargements du site sont incrémentés par les événements réellement enregistrés. Le graphique montre les événements réellement comptés sur les 7 derniers jours ; il peut donc commencer à zéro.
+Site Flask/Python pour présenter les livres d'Antoine Christopher. La bibliothèque accepte plusieurs fichiers PDF et EPUB. Ajouter un titre ne remplace pas les livres déjà publiés.
 
 ## Lancer en local
 
 ```bash
 python -m venv .venv
-# Windows: .venv\Scripts\activate
-# macOS/Linux:
 source .venv/bin/activate
 pip install -r requirements.txt
 export ADMIN_PASSWORD="choisir-un-mot-de-passe-solide"
+export SECRET_KEY="une-cle-secrete-longue-et-aleatoire"
 python app.py
 ```
 
-Ouvre `http://127.0.0.1:5000`. Sur Windows PowerShell, utilise `$env:ADMIN_PASSWORD="choisir-un-mot-de-passe-solide"`.
+Ouvre `http://127.0.0.1:5000`, puis `/admin` pour te connecter et ajouter un livre. Pour chaque livre, renseigne son titre, son auteur, sa description et son fichier PDF ou EPUB (50 Mo maximum). Les PDF peuvent être lus dans le navigateur; les PDF et EPUB peuvent être téléchargés.
 
-## Publier le livre
+## Déploiement Render
 
-1. Ouvre `/admin`.
-2. Saisis le mot de passe configuré avec `ADMIN_PASSWORD`.
-3. Sur l’écran suivant, saisis de nouveau le mot de passe et choisis le fichier PDF ou EPUB.
-4. Le fichier publié apparaît sur la page principale. Le bouton « Lire en ligne » s’affiche pour un PDF ; le bouton « Télécharger » fonctionne pour PDF et EPUB.
+1. Téléverse tout le contenu du dossier sur GitHub.
+2. Sur Render, crée le service Web depuis ce dépôt.
+3. Définis `ADMIN_PASSWORD` et une valeur forte pour `SECRET_KEY`.
+4. **Pour conserver les livres et les statistiques**, ajoute un Persistent Disk sur Render, monté sur `/var/data`, puis configure :
+   - `DATABASE_PATH=/var/data/booksite.db`
+   - `UPLOAD_FOLDER=/var/data/uploads`
 
-## Déployer sur GitHub + Render
+Sans disque persistant, le système de fichiers d'un service web peut être réinitialisé au redémarrage ou au redéploiement. Le code ne peut pas récupérer des fichiers ou statistiques déjà perdus. La migration de l'ancienne base, si elle est encore présente dans le dossier de données, conserve l'ancien livre et ses compteurs globaux.
 
-1. Crée un dépôt GitHub et téléverse tous les fichiers de ce dossier.
-2. Sur Render, choisis **New + → Blueprint** puis connecte le dépôt ; Render détectera `render.yaml`.
-3. Dans les variables d’environnement du service Render, définis `ADMIN_PASSWORD` avec un mot de passe solide. `SECRET_KEY` est générée par le Blueprint.
-4. Déploie et ouvre l’URL Render fournie.
+## Statistiques
 
-### IMPORTANT — persistance sur Render
+Les compteurs globaux commencent avec les valeurs de départ du design (800 vues, 264 téléchargements, 137 lecteurs et 42 partages). Les événements ultérieurs sont enregistrés dans SQLite. Les statistiques individuelles de chaque livre comptent les vues de la page d'accueil lorsqu'il est le premier titre, les lectures et les téléchargements. Le graphique montre les événements réels des sept derniers jours. Le compteur de partages reste une valeur initiale et ne mesure pas les partages externes.
 
-Le système de fichiers d’un service web Render standard peut être éphémère : sans disque persistant, la base SQLite et les fichiers uploadés peuvent disparaître lors d’un redéploiement ou d’un redémarrage. Pour conserver le livre et les statistiques :
-- ajoute un **Persistent Disk** dans Render (par exemple monté sur `/var/data`);
-- définis `UPLOAD_FOLDER=/var/data/uploads` et `DATABASE_PATH=/var/data/booksite.db`;
-- crée le dossier `uploads` sur le disque si nécessaire. Si ton plan Render ne permet pas les disques persistants, héberge le livre dans un stockage durable externe ou dans le dépôt (fichier public statique) et choisis une base de données persistante.
+## Sécurité
 
-## Personnalisation
-
-Variables facultatives : `BOOK_TITLE`, `BOOK_AUTHOR`, `BOOK_DESCRIPTION`, `UPLOAD_FOLDER`, `DATABASE_PATH`, `SECRET_KEY`, `ADMIN_PASSWORD`.
-
-## Notes de sécurité
-
-- Ne mets jamais ton mot de passe administrateur dans le code ou sur GitHub.
-- Change `SECRET_KEY` en production (le Blueprint la génère automatiquement).
-- La page d’administration utilise une vérification simple à chaque requête ; pour un projet public plus important, ajoute une authentification avec session sécurisée, limitation de tentatives et stockage persistant.
-- Les statistiques « partages » sont une valeur de départ visuelle pour l’instant ; le site ne prétend pas mesurer les partages externes.
+Ne mets pas `ADMIN_PASSWORD` ou `SECRET_KEY` dans le dépôt GitHub. Le panneau d'administration utilise une session après connexion; protège le mot de passe et configure HTTPS en production.
