@@ -44,9 +44,14 @@ def init_db():
             filename TEXT, original_name TEXT, uploaded_at TEXT,
             views INTEGER NOT NULL DEFAULT 0, downloads INTEGER NOT NULL DEFAULT 0,
             readers INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL)""")
-        defaults = {"views": 800, "downloads": 264, "readers": 137, "shares": 42}
+        # Statistiques de départ : les compteurs existants ne sont jamais diminués.
+        defaults = {"views": 940, "downloads": 400, "readers": 137, "shares": 42}
         for key, value in defaults.items():
             conn.execute("INSERT OR IGNORE INTO stats(key, value) VALUES(?, ?)", (key, value))
+        # Si la base existe déjà avec des compteurs plus bas, les relever une seule
+        # fois au minimum demandé. Les prochaines vues/téléchargements s'ajoutent normalement.
+        conn.execute("UPDATE stats SET value=MAX(value, 940) WHERE key='views'")
+        conn.execute("UPDATE stats SET value=MAX(value, 400) WHERE key='downloads'")
         # Migrate the existing single-book database without deleting the old row or file.
         if conn.execute("SELECT COUNT(*) FROM books").fetchone()[0] == 0:
             old = conn.execute("SELECT * FROM book_files WHERE id=1").fetchone()
