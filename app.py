@@ -175,12 +175,18 @@ def admin():
         return ("Configurez la variable ADMIN_PASSWORD dans Render avant d’utiliser cette page.", 503)
     if request.method == "POST":
         if request.form.get("password") != password:
+            session.pop("admin_authorized", None)
             flash("Mot de passe incorrect.", "error")
             return render_template("admin.html", authorized=False, books=list_books())
+        # Le formulaire de publication n'est rendu qu'après validation du mot de passe.
+        # Ne pas rediriger ici : un GET de /admin redemande toujours le mot de passe.
         session["admin_authorized"] = True
-        session.permanent = True
-        return redirect(url_for("admin"))
-    return render_template("admin.html", authorized=admin_authorized(), books=list_books())
+        session.permanent = False
+        return render_template("admin.html", authorized=True, books=list_books())
+    # À chaque nouvelle ouverture/recharge de /admin, masquer le formulaire jusqu'à
+    # ce que le mot de passe soit saisi à nouveau.
+    session.pop("admin_authorized", None)
+    return render_template("admin.html", authorized=False, books=list_books())
 
 @app.route("/admin/logout", methods=["POST"])
 def admin_logout():
