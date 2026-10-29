@@ -55,7 +55,6 @@
     <article class="library-card">
       <div class="library-card-cover"><span>{{ item.title }}</span><small>{{ item.author }}</small></div>
       <div class="library-card-body"><h3>{{ item.title }}</h3><p class="byline">Par <strong>{{ item.author }}</strong></p><p>{{ item.description }}</p>
-        <div class="library-metrics"><span>{{ item.views }} vues</span><span>{{ item.downloads }} téléchargements</span></div>
         <div class="book-actions">
           {% if item.filename and item.original_name and item.original_name.lower().endswith('.pdf') %}<a class="button button-primary" href="{{ url_for('read_specific_book', book_id=item.id) }}">Lire en ligne <span>↗</span></a>{% endif %}
           {% if item.filename %}<a class="button button-outline" href="{{ url_for('download_specific_book', book_id=item.id) }}">Télécharger <span>↓</span></a>{% else %}<span class="form-note">Fichier bientôt disponible</span>{% endif %}
@@ -73,7 +72,6 @@
 .library-card-cover small{letter-spacing:.14em;text-transform:uppercase;font-size:10px;color:#9daebe}
 .library-card-body{padding:22px}.library-card-body h3{margin:0 0 8px;font-family:'Playfair Display',serif;font-size:24px}
 .library-card-body>p:not(.byline){color:#a9b5c5;line-height:1.6;font-size:14px}
-.library-metrics{display:flex;gap:12px;flex-wrap:wrap;color:#92a3b8;font-size:12px;margin:14px 0}
 .library-card .book-actions{display:flex;gap:8px;flex-wrap:wrap}
 </style>
 {% endif %}

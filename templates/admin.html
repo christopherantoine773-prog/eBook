@@ -13,6 +13,7 @@
     <label for="author">Auteur</label><input id="author" type="text" name="author" required maxlength="120" value="Antoine Christopher">
     <label for="description">Description</label><textarea id="description" name="description" rows="4" maxlength="2000" placeholder="Présente ton livre en quelques phrases"></textarea>
     <label for="book_file">Fichier du livre (PDF ou EPUB)</label><input id="book_file" type="file" name="book_file" accept=".pdf,.epub,application/pdf,application/epub+zip" required>
+    <label for="upload_password">Confirme ton mot de passe avant publication</label><input id="upload_password" type="password" name="upload_password" required autocomplete="current-password" placeholder="Mot de passe administrateur">
     <p class="form-note">Maximum 50 Mo. Le livre sera ajouté à la bibliothèque sans remplacer les autres.</p>
     <button class="button button-primary full-button" type="submit">Ajouter à la bibliothèque <span>↗</span></button>
   </form>
