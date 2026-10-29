@@ -1,16 +1,22 @@
 {% extends "base.html" %}
 {% block title %}Espace auteur — Echo{% endblock %}
 {% block content %}
-<section class="admin-wrap"><a class="back-link" href="{{ url_for('index') }}">← Retour au site</a><div class="eyebrow">ESPACE PRIVÉ</div><h1>Publier votre <em>livre.</em></h1><p class="admin-intro">Ajoutez la version PDF ou EPUB qui sera visible sur la page publique.</p>
+<section class="admin-wrap">
+<a class="back-link" href="{{ url_for('index') }}">← Retour au site</a>
+<div class="eyebrow">ESPACE PRIVÉ</div><h1>Publier vos <em>livres.</em></h1>
+<p class="admin-intro">Ajoute plusieurs livres PDF ou EPUB à ta bibliothèque. Publier un nouveau titre ne remplace pas les précédents.</p>
 <div class="admin-card">
 {% if authorized %}
-  <div class="admin-success">✓ Accès autorisé pour cette session.</div>
-  <form method="post"  action="{{ url_for('admin_upload') }}"enctype="multipart/form-data">
-    <label for="password2">Mot de passe administrateur</label><input id="password2" type="password" name="password" required placeholder="Saisissez à nouveau votre mot de passe">
-    <label for="book_file">Fichier du livre (PDF ou EPUB)</label><input id="book_file" type="file" name="book_file" accept=".pdf,.epub" required>
-    <p class="form-note">Maximum 50 Mo. Le nouveau fichier remplacera la version publique précédente.</p>
-    <button class="button button-primary full-button" type="submit">Publier le livre <span>↗</span></button>
+  <div class="admin-success">✓ Accès autorisé. Tu peux ajouter un nouveau livre.</div>
+  <form method="post" action="{{ url_for('admin_upload') }}" enctype="multipart/form-data">
+    <label for="title">Titre du livre</label><input id="title" type="text" name="title" required maxlength="180" placeholder="Titre du nouveau livre">
+    <label for="author">Auteur</label><input id="author" type="text" name="author" required maxlength="120" value="Antoine Christopher">
+    <label for="description">Description</label><textarea id="description" name="description" rows="4" maxlength="2000" placeholder="Présente ton livre en quelques phrases"></textarea>
+    <label for="book_file">Fichier du livre (PDF ou EPUB)</label><input id="book_file" type="file" name="book_file" accept=".pdf,.epub,application/pdf,application/epub+zip" required>
+    <p class="form-note">Maximum 50 Mo. Le livre sera ajouté à la bibliothèque sans remplacer les autres.</p>
+    <button class="button button-primary full-button" type="submit">Ajouter à la bibliothèque <span>↗</span></button>
   </form>
+  <form method="post" action="{{ url_for('admin_logout') }}" style="margin-top:14px"><button class="button button-quiet full-button" type="submit">Se déconnecter</button></form>
 {% else %}
   <form method="post" action="{{ url_for('admin') }}">
     <label for="password">Mot de passe administrateur</label><input id="password" type="password" name="password" required autocomplete="current-password" placeholder="Votre mot de passe">
@@ -18,6 +24,19 @@
   </form>
 {% endif %}
 </div>
-<div class="admin-warning"><b>Important pour Render</b><p>Configure <code>ADMIN_PASSWORD</code> dans les variables d’environnement de Render. Pour garder les fichiers et les statistiques après un redéploiement, utilise un disque persistant Render et définis <code>UPLOAD_FOLDER</code> et <code>DATABASE_PATH</code> sur son chemin de montage.</p></div>
+{% if authorized %}
+<div class="admin-card" style="margin-top:24px">
+  <h2 style="margin-top:0">Ma bibliothèque ({{ books|length }})</h2>
+  {% if books %}
+    {% for item in books %}
+      <div style="display:flex;justify-content:space-between;gap:16px;align-items:center;padding:14px 0;border-bottom:1px solid rgba(148,163,184,.15)">
+        <div><strong>{{ item.title }}</strong><p class="form-note" style="margin:5px 0">{{ item.author }} · {{ item.original_name or 'Fichier non ajouté' }} · {{ item.views }} vues · {{ item.downloads }} téléchargements</p></div>
+        <form method="post" action="{{ url_for('delete_book', book_id=item.id) }}" onsubmit="return confirm('Supprimer ce livre et son fichier ? Cette action est irréversible.');"><button class="button button-quiet" type="submit">Supprimer</button></form>
+      </div>
+    {% endfor %}
+  {% else %}<p class="form-note">Aucun livre pour le moment.</p>{% endif %}
+</div>
+{% endif %}
+<div class="admin-warning"><b>Important pour Render</b><p>Pour conserver les livres et statistiques après un redéploiement, ajoute un disque persistant monté sur <code>/var/data</code>. Configure <code>DATABASE_PATH=/var/data/booksite.db</code> et <code>UPLOAD_FOLDER=/var/data/uploads</code>. Sans disque persistant, les données peuvent disparaître après un redéploiement.</p></div>
 </section>
 {% endblock %}

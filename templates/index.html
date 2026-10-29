@@ -46,6 +46,38 @@
   </div>
 </section>
 
+
+{% if books|length > 1 %}
+<section class="section library-section" id="bibliotheque">
+  <div class="section-heading"><div><div class="eyebrow">TOUTES LES ŒUVRES</div><h2>Ma <em>bibliothèque.</em></h2></div><span class="section-number">{{ "%02d"|format(books|length) }} LIVRES</span></div>
+  <div class="library-grid">
+  {% for item in books %}
+    <article class="library-card">
+      <div class="library-card-cover"><span>{{ item.title }}</span><small>{{ item.author }}</small></div>
+      <div class="library-card-body"><h3>{{ item.title }}</h3><p class="byline">Par <strong>{{ item.author }}</strong></p><p>{{ item.description }}</p>
+        <div class="library-metrics"><span>{{ item.views }} vues</span><span>{{ item.downloads }} téléchargements</span></div>
+        <div class="book-actions">
+          {% if item.filename and item.original_name and item.original_name.lower().endswith('.pdf') %}<a class="button button-primary" href="{{ url_for('read_specific_book', book_id=item.id) }}">Lire en ligne <span>↗</span></a>{% endif %}
+          {% if item.filename %}<a class="button button-outline" href="{{ url_for('download_specific_book', book_id=item.id) }}">Télécharger <span>↓</span></a>{% else %}<span class="form-note">Fichier bientôt disponible</span>{% endif %}
+        </div>
+      </div>
+    </article>
+  {% endfor %}
+  </div>
+</section>
+<style>
+.library-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}
+.library-card{overflow:hidden;border:1px solid rgba(148,163,184,.18);border-radius:18px;background:rgba(17,29,45,.72)}
+.library-card-cover{min-height:150px;padding:24px;display:flex;flex-direction:column;justify-content:flex-end;gap:12px;background:radial-gradient(circle at 70% 15%,rgba(77,217,199,.22),transparent 38%),linear-gradient(135deg,#101e31,#070d18);color:#f4f0e8}
+.library-card-cover span{font-family:'Playfair Display',serif;font-size:25px;line-height:1.1}
+.library-card-cover small{letter-spacing:.14em;text-transform:uppercase;font-size:10px;color:#9daebe}
+.library-card-body{padding:22px}.library-card-body h3{margin:0 0 8px;font-family:'Playfair Display',serif;font-size:24px}
+.library-card-body>p:not(.byline){color:#a9b5c5;line-height:1.6;font-size:14px}
+.library-metrics{display:flex;gap:12px;flex-wrap:wrap;color:#92a3b8;font-size:12px;margin:14px 0}
+.library-card .book-actions{display:flex;gap:8px;flex-wrap:wrap}
+</style>
+{% endif %}
+
 <section class="section analytics-section" id="analytics">
   <div class="section-heading"><div><div class="eyebrow">APERÇU DES PERFORMANCES</div><h2>Le livre, en <em>chiffres.</em></h2></div><span class="section-number">02 — 03</span></div>
   <div class="analytics-layout">

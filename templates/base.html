@@ -15,7 +15,7 @@
   <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
   <header class="topbar">
     <a class="brand" href="{{ url_for('index') }}"><span class="brand-mark">E</span><span>Echo<span class="brand-dot">.</span></span></a>
-    <nav><a href="{{ url_for('index') }}#book">Le livre</a><a href="{{ url_for('index') }}#analytics">Statistiques</a><a class="nav-cta" href="{{ url_for('admin') }}">Espace auteur ↗</a></nav>
+    <nav><a href="{{ url_for('index') }}#book">Le livre</a><a href="{{ url_for('index') }}#bibliotheque">Bibliothèque</a><a href="{{ url_for('index') }}#analytics">Statistiques</a><a class="nav-cta" href="{{ url_for('admin') }}">Espace auteur ↗</a></nav>
   </header>
   <main class="page-wrap">
     {% with messages = get_flashed_messages(with_categories=true) %}
