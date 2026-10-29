@@ -192,6 +192,14 @@ def admin_logout():
 def admin_upload():
     if not admin_authorized():
         abort(403)
+
+    # Reconfirmer le mot de passe à chaque publication, même si la session est ouverte.
+    configured_password = os.environ.get("ADMIN_PASSWORD", "")
+    submitted_password = request.form.get("upload_password", "")
+    if not configured_password or submitted_password != configured_password:
+        flash("Mot de passe incorrect. Confirme ton mot de passe pour publier ce livre.", "error")
+        return redirect(url_for("admin"))
+
     file = request.files.get("book_file")
     title = request.form.get("title", "").strip()
     author = request.form.get("author", "").strip()
